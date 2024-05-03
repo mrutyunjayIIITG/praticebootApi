@@ -1,6 +1,8 @@
 package com.raja.studentdetail.controller;
 import com.raja.studentdetail.dto.StudentDto;
+import com.raja.studentdetail.dto.StudentNameCollegeDto;
 import com.raja.studentdetail.entity.Student;
+import com.raja.studentdetail.service.StudentNameCollegeService;
 import com.raja.studentdetail.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,12 @@ import java.util.Optional;
 public class StudentController {
 
     private final StudentService studentService;
+    private final StudentNameCollegeService studentNameCollegeService;
 
     @Autowired
-    public StudentController(StudentService studentService) {
+    public StudentController(StudentService studentService, StudentNameCollegeService studentNameCollegeService) {
         this.studentService = studentService;
+        this.studentNameCollegeService = studentNameCollegeService;
     }
 
 
@@ -45,6 +49,21 @@ public class StudentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    //getting student name and college from emailid
+
+    @GetMapping("/studentcollege/{email}")
+    public ResponseEntity<StudentNameCollegeDto> getStudentNameAndCollegeNameByEmail(@PathVariable String email) {
+        Optional<StudentNameCollegeDto> studentDto = Optional.ofNullable(studentNameCollegeService.getStudentDetailsByEmail(email));
+        if (studentDto.isPresent()) {
+            return new ResponseEntity<>(studentDto.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudentById(@PathVariable String id) {
